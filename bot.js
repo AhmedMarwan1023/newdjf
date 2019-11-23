@@ -1,5 +1,5 @@
 client.on("message", message => {
- let prefix = '$' {
+const prefix = '$'
   
               if (message.content.startsWith(prefix + "bc")) {
                            if (!message.member.hasPermission("ADMINISTRATOR"))  return;
