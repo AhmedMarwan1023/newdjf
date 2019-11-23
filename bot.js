@@ -1,172 +1,79 @@
-// const Discord = require("discord.js");
-const prefix = "$";
-
-client.on("message", async message => {
-    var command = message.content.split(" ")[0];
-    command = command.slice(prefix.length);
-        if(!message.channel.guild) return;
-            var args = message.content.split(" ").slice(1).join(" ");
-            if(command == "bc") {
-                if(!message.member.hasPermission("ADMINISTRATOR")) {
-                    return message.channel.send("**للأسف لا تمتلك صلاحية `ADMINISTRATOR`**");
-                }
-                    if(!args) {
-                        return message.reply("**يجب عليك كتابة كلمة او جملة لإرسال البرودكاست**");
-                    }
-                        message.channel.send(`**هل أنت متأكد من إرسالك البرودكاست؟\nمحتوى البرودكاست: \`${args}\`**`).then(m => {
-                            m.react("✅")
-                            .then(() => m.react("❌"));
-
-                            let yesFilter = (reaction, user) => reaction.emoji.name == "✅" && user.id == message.author.id;
-                            let noFiler = (reaction, user) => reaction.emoji.name == "❌" && user.id == message.author.id;
-
-                            let yes = m.createReactionCollector(yesFilter);
-                            let no = m.createReactionCollector(noFiler);
-
-                            yes.on("collect", v => {
-                                m.delete();
-                                    message.channel.send(`:ballot_box_with_check: | Done ... The Broadcast Message Has Been Sent For ${message.guild.memberCount} Members`).then(msg => msg.delete(5000));
-                                        message.guild.members.forEach(member => {
-                                            let bc = new Discord.RichEmbed()
-                                            .setColor("RANDOM")
-                                            .setThumbnail(message.author.avatarURL)
-                                            .setTitle("Broadcast")
-                                            .addField("Server", message.guild.name)
-                                            .addField("Sender", message.author.username)
-                                            .addField("Message", args);
-
-                                            member.sendEmbed(bc);
-                                        });
-                        });
-                        no.on("collect", v => {
-                            m.delete();
-                            message.channel.send("**Broadcast Canceled.**").then(msg => msg.delete(3000));
-                        });
-                            
-                        });
-            }
-            if(command == "bco") {
-                if(!message.member.hasPermission("ADMINISTRATOR")) {
-                    return message.channel.send("**للأسف لا تمتلك صلاحية `ADMINISTRATOR`**");
-                }
-                    if(!args) {
-                        return message.reply("**يجب عليك كتابة كلمة او جملة لإرسال البرودكاست**");
-                    }
-                        message.channel.send(`**هل أنت متأكد من إرسالك البرودكاست؟\nمحتوى البرودكاست: \`${args}\`**`).then(m => {
-                            m.react("✅")
-                            .then(() => m.react("❌"));
-
-                            let yesFilter = (reaction, user) => reaction.emoji.name == "✅" && user.id == message.author.id;
-                            let noFiler = (reaction, user) => reaction.emoji.name == "❌" && user.id == message.author.id;
-
-                            let yes = m.createReactionCollector(yesFilter);
-                            let no = m.createReactionCollector(noFiler);
-
-                            yes.on("collect", v => {
-                                m.delete();
-                                    message.channel.send(`:ballot_box_with_check: | Done ... The Broadcast Message Has Been Sent For ${message.guild.members.filter(r => r.presence.status !== "offline").size} Members`).then(msg => msg.delete(5000));
-                                        message.guild.members.filter(r => r.presence.status !== "offline").forEach(member => {
-                                            let bco = new Discord.RichEmbed()
-                                            .setColor("RANDOM")
-                                            .setThumbnail(message.author.avatarURL)
-                                            .setTitle("Broadcast")
-                                            .addField("Server", message.guild.name)
-                                            .addField("Sender", message.author.username)
-                                            .addField("Message", args);
-
-                                            member.sendEmbed(bco);
-                                        });
-                        });
-                        no.on("collect", v => {
-                            m.delete();
-                            message.channel.send("**Broadcast Canceled.**").then(msg => msg.delete(3000));
-                        });
-                            
-                        });
-            }
+//CopyRights ToxicCodes 04/28/2019 🌠☭ 🕅ØŇŞŦ€Ř ҜƗŇᎶ 👺❦❧#8722
+client.on("message", message =>{
+  let command = message.content.split(" ")[0].slice(prefix.length);
+  let args = message.content.split(" ").slice(1);
+  if(!message.content.startsWith(prefix)) return;
+  if(message.author.bot) return;
+  if(command === "welcome") {
+      let welcomechann = args.join(" ");
+      if(!message.member.hasPermission("ADMINISTRATOR")) return message.reply("You must have the **`ADMINISTRATOR`** permission!")
+      if(!message.guild.me.hasPermission("ADMINISTRATOR")) return message.reply("I must have the **`ADMINISTRATOR`** permissions!")
+      if(!message.member.guild.channels.find(x => x.name === welcomechann)) return message.reply("Usage: **`(channel name)`**");
+      message.reply("Successfully applied welcome to **`" + welcomechann + "`**")
+      WelcomeChannel[message.guild.id] = {
+          guild: message.guild.name,
+          channel: welcomechann
+      }
+      fs.writeFile("./welcomer.json", JSON.stringify(WelcomeChannel, null, 4), err => {
+          if(err) throw err;
+  });
+}
 });
-
-
-
-client.on("message", async message => {
-    if(message.content == prefix + "server") {
-        if(!message.channel.guild) return;
-            if(!message.member.hasPermission("MANAGE_GUILD")) {
-                return message.channel.send("ليس لديك الصلآحية الكآفية . :broken_heart:");
-            }
-
-                let server = new Discord.RichEmbed()
-                    .setAuthor(message.guild.name)
-                    .setColor("RANDOM")
-                    .setTitle("Server Info :hearts: :sparkles:")
-                    .setDescription(`Members :bust_in_silhouette: : ${message.guild.memberCount}\nOwner :crown: : ${message.guild.owner.user.username}\nServer ID :id: : ${message.guild.id}\nRoles :lock: : ${message.guild.roles.size}\nRegion :earth_africa: : ${message.guild.region.toUpperCase()}`);
-
-                    message.channel.sendEmbed(server);
-
-    }
-});
-client.on("message", async message => {
-    if(message.content.startsWith(prefix + "banned")) {
-        if(!message.guild) return;
-        message.guild.fetchBans()
-        .then(bans => {
-            let b = bans.size;
-            let bb = bans.map(a => `${a}`).join(" - ");
-            message.channel.send(`**\`${b}\` | ${bb}**`);
-        });
-    }
-});
-client.on("message", async message => {
-    if(message.content.startsWith(prefix + "invite")) {
-        let invite = new Discord.RichEmbed()
-            .setColor("RANDOM")
-            .setAuthor(message.author.username, message.author.displayAvatarURL)
-            .setThumbnail(message.author.avatarURL)
-            .setTitle("**Click Here To Invite The Bot To Your Server :sparkling_heart:**")
-            .setURL(`https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=8`);
-            message.channel.sendEmbed(invite);
-    }
-});
-client.on("message", async message => {
-    if(message.content.startsWith(prefix + "help")) {
-        let help = new Discord.RichEmbed()
-            .setColor("RANDOM")
-            .setThumbnail(message.author.avatarURL)
-            .setDescription(`**__برودكاست بوت | Version 1.1__ 
-
-            برودكاست عادي : ${prefix}bc
-            دعوة البوت لسيرفرك : ${prefix}invite
-            معلومات عن السيرفر : ${prefix}server
-            برودكاست للأونلاين فقط : ${prefix}bco
-            يعرض لك عدد المتبندين من سيرفرك : ${prefix}banned
-            رابط سيرفر الدعم الفني : https://discord.gg/hDME85e
-            **`);
-            message.channel.sendEmbed(help); // رابط السيرفر يعود الى سيرفر CODES .
-    }
-});
-
-
-client.on("message", message => { //clear
-              var args = message.content.substring(prefix.length).split(" ");
-              if (message.content.startsWith(prefix + "clear")) {
-                  if(!message.channel.guild) return message.reply('**? اسف لكن هذا الامر للسيرفرات فقط **');         
-     if(!message.member.hasPermission('MANAGE_MESSAGES')) return message.reply('**?  لا يوجد لديك صلاحية لمسح الشات**');
-          var msg;
-          msg = parseInt();
-        
-        message.channel.fetchMessages({limit: msg}).then(messages => message.channel.bulkDelete(messages)).catch(console.error);
-        message.channel.sendMessage("", {embed: {
-          title: "``تــم مسح الشات ``",
-          color: 0x5016f3, 
-          footer: {
-            
-          }
-        }}).then(msg => {msg.delete(3000)});
-                            }
-  
-       
-});
-
-
+client.on('guildMemberAdd', async function (Monster) {
+  const WelcomeChannelMK =  Monster.guild.channels.find(mk => mk.name === WelcomeChannel[Monster.guild.id].channel);
+  if(!WelcomeChannelMK) return;
+  Monster.guild.fetchInvites().then(guildInvites => {
+      const uses = guildInvites.find(codes => codes.uses);
+      const UserInvited = client.users.get(uses.inviter.id);
+            let itsMe = client.emojis.find(copy => copy.name === "diamondmk");
+            var EmbedWelcome = new Discord.RichEmbed()
+            .setDescription(`${itsMe} __**New Member Joined**__
+            ➤ Welcome <@${Monster.user.id}> To **${Monster.guild.name}**
+            ➤ You Are Nr: **${Monster.guild.memberCount}**
+            ➤ Invited By: <@${UserInvited.id}>`)
+            .setColor('#383c41');
+  const MKPIC = ['./imgs/w1.png'];
+  let Image = Canvas.Image,
+     CodesMK = new Canvas(400, 200),
+     ctx = CodesMK.getContext('2d');
+ fs.readFile(MKPIC, function (err, Background) {
+     if (err) return console.log(err);
+     let BG = Canvas.Image;
+     let ground = new Image;
+     ground.src = Background;
+     ctx.drawImage(ground, 0, 0, 400, 200);
+         let url = Monster.user.displayAvatarURL.endsWith(".webp") ? Monster.user.displayAvatarURL.slice(100) + ".png" : Monster.user.displayAvatarURL;
+         jimp.read(url, (err, ava) => {
+             if (err) return console.log(err);
+             ava.getBuffer(jimp.MIME_PNG, (err, buf) => {
+                 if (err) return console.log(err);
+                  ctx.font = "bold 16px Arial";
+                  ctx.fontSize = '20px';
+                  ctx.fillStyle = "#f1f1f1";
+                  ctx.textAlign = "center";
+                  ctx.fillText(Monster.guild.name, 254, 67);
+                  ctx.font = "bold 16px Arial";
+                  ctx.fontSize = '20px';
+                  ctx.fillStyle = "#f1f1f1";
+                  ctx.textAlign = "center";
+                  ctx.fillText(Monster.guild.memberCount, 338, 161);
+                  ctx.font = "bold 16px Arial";
+                  ctx.fontSize = '20px';
+                  ctx.fillStyle = "#f1f1f1";
+                  ctx.textAlign = "center";
+                  ctx.fillText(Monster.user.username, 77, 183);
+                  let Avatar = Canvas.Image;
+                  let ava = new Avatar;
+                  ava.src = buf;
+                  ctx.beginPath();
+                  ctx.arc(77, 101, 62, 0, Math.PI*2);
+                  ctx.stroke();
+                  ctx.clip();
+                  ctx.drawImage(ava, 13, 38, 128, 126);
+          WelcomeChannelMK.send({embed: EmbedWelcome, file: CodesMK.toBuffer()});
+              })
+          })
+      });
+  })
 
 client.login(process.env.BOT_TOKEN);
