@@ -1,9 +1,6 @@
 // const Discord = require("discord.js");
 const prefix = "$";
 
-
-
-client.on('ready', () => {
    console.log(`----------------`);
       console.log(`Desert Bot- Script By : EX Clan`);
         console.log(`----------------`);
